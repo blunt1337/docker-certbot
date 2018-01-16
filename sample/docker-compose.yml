@@ -1,0 +1,28 @@
+version: '3.4'
+services:
+  # Web server
+  web:
+    image: nginx:alpine
+    volumes:
+      - ./ssl:/etc/nginx/ssl
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - certbot
+
+  # Certbot
+  certbot:
+    build: ..
+    environment:
+      DOMAIN: home.blunt.sh
+      EMAIL: contact@blunt.sh
+      RELOAD_CMD: docker exec sample_web_1 /bin/sh -c 'kill -SIGHUP $$(cat /var/run/nginx.pid)'
+    volumes:
+      - ./ssl:/result/ssl
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+  default:
