@@ -23,7 +23,7 @@ ssl_certificate_key /etc/nginx/ssl/privkey.pem;
 ```
 
 To finish, you need to have a running certbot container:  
-`docker run -d -e "DOMAIN=blunt.sh" -e "EMAIL=contact@blunt.sh" -v ./ssl:/result/ssl -e "RELOAD_CMD=???" -n certbot blunt1337/certbot`  
+`docker run -d -e "DOMAINS=blunt.sh *.blunt.sh" -e "EMAIL=contact@blunt.sh" -v ./ssl:/result/ssl -e "RELOAD_CMD=???" -n certbot blunt1337/certbot`  
 
 The reload command depends on your configuration, it is run every time the ssl certificate is modified.  
 Our container as docker installed in it, so if you want to execute commands on another container, you can by adding `-v /var/run/docker.sock:/var/run/docker.sock:ro`  

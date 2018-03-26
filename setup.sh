@@ -26,10 +26,14 @@ if [ -z \"\$EMAIL\" ]; then
 	echo \"Missing email environement variable\" >&2
 	exit 1
 fi
-if [ -z \"\$DOMAIN\" ]; then
-	echo \"Missing domain environement variable\" >&2
+[ -z \"\$DOMAIN\" ] && DOMAINS=\"\$DOMAIN\"
+if [ -z \"\$DOMAINS\" ]; then
+	echo \"Missing domains environement variable\" >&2
 	exit 1
 fi
+
+# Fix domains separator
+DOMAINS=$(echo \"\$DOMAINS\" | sed -e 's/[,; ]\+/,/g')
 
 # Default ssl self-signed
 if [ ! -f /result/ssl/privkey.pem ] || [ ! -f /result/ssl/fullchain.pem ]; then
@@ -42,7 +46,7 @@ sleep 30s
 
 while true; do
 	# Generate / renew
-	certbot certonly --standalone --preferred-challenges http -m \"\$EMAIL\" -d \"\$DOMAIN\" --cert-name default -n --agree-tos --keep
+	certbot certonly --standalone --preferred-challenges http -m \"\$EMAIL\" -d \"\$DOMAINS\" --cert-name default -n --agree-tos --keep
 	
 	# Old cert md5
 	sum=\$(md5sum /result/ssl/fullchain.pem)
